@@ -24,85 +24,68 @@ def login():
 			# Esconde a janela principal
 			app.withdraw()
 
-			# Define os valores para cada critério
-			prazos = {
-				"1 semanas": 1500,
-				"2 semanas": 2300,
-				"3 semanas": 3100,
-				"4 semanas": 3900,
-				"5 semanas": 4800,
-				"6 semanas": 5700,
-				"7 semanas": 6500,
-				"8 semanas": 7300,
-				"9 semanas": 8100,
-				"10 semanas": 8900,
-				"11 semanas": 9800,
-				"12 semanas": 10600,
-				"13 semanas": 11400,
-				"14 semanas": 12200,
-				"15 semanas": 13000
-			}
-
-			pessoas = {
-				"1 pessoa": 1,
-				"2 pessoas": 1.5,
-				"3 pessoas": 2,
-				"4 pessoas": 2.5,
-				"5 pessoas": 3,
-				"6 pessoas": 3.5,
-				"7 pessoas": 4,
-				"8 pessoas": 4.5,
-				"9 pessoas": 5,
-				"10 pessoas": 5.5
-			}
-
+			# Declara alguns valores predeterminados no calculo
 			tipos = {
-				"Frontend": 1,
-				"Backend": 1.2,
-				"Fullstack": 1.5
+				"Front-End": 1,
+				"Back-End": 1.4,
+				"FullStack": 1.8
 			}
 
-			prototipo = {
-				"Sim": 1.2,
-				"Não": 1.0
+			urgencia = {
+				"Baixa": 1,
+				"Média": 1.5,
+				"Alta": 2
 			}
 
 			# Cria os elementos do formulário na nova janela
 			form_frame = ctk.CTkFrame(new_window)
-			form_frame.pack(padx=20, pady=20)
+			form_frame.pack(padx=10, pady=10)
 
 			# Dropdowns
-			prazo_label = ctk.CTkLabel(form_frame, text="Prazo:")
-			prazo_label.pack(pady=10)
-			prazo_dropdown = ctk.CTkComboBox(form_frame, values=list(prazos.keys()))
-			prazo_dropdown.pack(pady=10)
+			valor_hora_label = ctk.CTkLabel(form_frame, text="Valor da hora trabalhada(R$)(A média é de R$25h):")
+			valor_hora_label.pack(pady=5)
+			valor_hora_entry = ctk.CTkEntry(form_frame)
+			valor_hora_entry.pack(pady=5)
+
+			dias_da_semana_trabalhados_label = ctk.CTkLabel(form_frame, text="Dias da semana trabalhados:")
+			dias_da_semana_trabalhados_label.pack(pady=5)
+			dias_da_semana_trabalhados_entry = ctk.CTkEntry(form_frame)
+			dias_da_semana_trabalhados_entry.pack(pady=5)
 
 			pessoas_label = ctk.CTkLabel(form_frame, text="Número de Pessoas:")
-			pessoas_label.pack(pady=10)
-			pessoas_dropdown = ctk.CTkComboBox(form_frame, values=list(pessoas.keys()))
-			pessoas_dropdown.pack(pady=10)
+			pessoas_label.pack(pady=5)
+			pessoas_entry = ctk.CTkEntry(form_frame)
+			pessoas_entry.pack(pady=5)
 
 			tipo_label = ctk.CTkLabel(form_frame, text="Tipo de Desenvolvimento:")
-			tipo_label.pack(pady=10)
+			tipo_label.pack(pady=5)
 			tipo_dropdown = ctk.CTkComboBox(form_frame, values=list(tipos.keys()))
-			tipo_dropdown.pack(pady=10)
+			tipo_dropdown.pack(pady=5)
 
-			prototipo_label = ctk.CTkLabel(form_frame, text="Protótipo ? :")
-			prototipo_label.pack(pady=10)
-			prototipo_dropdown = ctk.CTkComboBox(form_frame, values=list(prototipo.keys()))
-			prototipo_dropdown.pack(pady=10)
+			prazo_label = ctk.CTkLabel(form_frame, text="Prazo para entrega do projeto (Semanas):")
+			prazo_label.pack(pady=5)
+			prazo_entry = ctk.CTkEntry(form_frame)
+			prazo_entry.pack(pady=5)
+
+			nivel_urgencia_label = ctk.CTkLabel(form_frame, text="Nível de urgência da entrega:")
+			nivel_urgencia_label.pack(pady=5)
+			nivel_urgencia_dropdown = ctk.CTkComboBox(form_frame, values=list(urgencia.keys()))
+			nivel_urgencia_dropdown.pack(pady=5)
 
 			# Função para calcular o valor
 			def calcular_valor():
 				try:
-					prazo_selecionado = prazo_dropdown.get()
-					pessoas_selecionadas = pessoas_dropdown.get()
+					valor_hora = int(valor_hora_entry.get())
+					dias_da_semana_trabalhados = int(dias_da_semana_trabalhados_entry.get())
+					pessoas = int(pessoas_entry.get())
 					tipo_selecionado = tipo_dropdown.get()
-					prototipo_selecionado = prototipo_dropdown.get()
+					prazo_selecionado = int(prazo_entry.get())
+					nivel_urgencia = nivel_urgencia_dropdown.get()
 
-					valor_base = prazos[prazo_selecionado] * pessoas[pessoas_selecionadas]
-					valor_final = valor_base * tipos[tipo_selecionado] * prototipo[prototipo_selecionado]
-					valor_por_pessoa = valor_final / pessoas[pessoas_selecionadas]
+					calculo_hora_por_semana = (valor_hora * 6) * dias_da_semana_trabalhados
+					valor_base = calculo_hora_por_semana * pessoas * prazo_selecionado
+					valor_final = valor_base * tipos[tipo_selecionado] * urgencia[nivel_urgencia]
+					valor_por_pessoa = valor_final / pessoas
 
 					resultado_label.configure(text=f"Valor estimado: R$ {valor_final:.2f}")
 					media_label.configure(text=f"Valor por pessoa: R${valor_por_pessoa:.2f}")
@@ -111,13 +94,13 @@ def login():
 			
 			# Botão calcular
 			calcular_button = ctk.CTkButton(form_frame, text="Calcular", command=calcular_valor)
-			calcular_button.pack(pady=10)
+			calcular_button.pack(pady=5)
 
 			# Rótulo para exibir o resultado
 			resultado_label = ctk.CTkLabel(form_frame, text="Valor estimado:")
-			resultado_label.pack(pady=10)
+			resultado_label.pack(pady=5)
 			media_label = ctk.CTkLabel(form_frame, text="Valor por pessoa:")
-			media_label.pack(pady=10)
+			media_label.pack(pady=5)
 
 	else:
 			tkmb.showwarning(title='Credenciais erradas', message='Verifique seu login e senha')
